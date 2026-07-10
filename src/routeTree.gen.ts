@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RecrutementRouteImport } from './routes/recrutement'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
+import { Route as JeuRouteImport } from './routes/jeu'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ConfirmationRouteImport } from './routes/confirmation'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
@@ -27,6 +28,11 @@ const RecrutementRoute = RecrutementRouteImport.update({
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
   id: '/mentions-legales',
   path: '/mentions-legales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JeuRoute = JeuRouteImport.update({
+  id: '/jeu',
+  path: '/jeu',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/confidentialite': typeof ConfidentialiteRoute
   '/confirmation': typeof ConfirmationRoute
   '/contact': typeof ContactRoute
+  '/jeu': typeof JeuRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/recrutement': typeof RecrutementRoute
   '/staff/login': typeof StaffLoginRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/confidentialite': typeof ConfidentialiteRoute
   '/confirmation': typeof ConfirmationRoute
   '/contact': typeof ContactRoute
+  '/jeu': typeof JeuRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/recrutement': typeof RecrutementRoute
   '/staff/login': typeof StaffLoginRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/confidentialite': typeof ConfidentialiteRoute
   '/confirmation': typeof ConfirmationRoute
   '/contact': typeof ContactRoute
+  '/jeu': typeof JeuRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/recrutement': typeof RecrutementRoute
   '/staff/login': typeof StaffLoginRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/confirmation'
     | '/contact'
+    | '/jeu'
     | '/mentions-legales'
     | '/recrutement'
     | '/staff/login'
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/confirmation'
     | '/contact'
+    | '/jeu'
     | '/mentions-legales'
     | '/recrutement'
     | '/staff/login'
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/confirmation'
     | '/contact'
+    | '/jeu'
     | '/mentions-legales'
     | '/recrutement'
     | '/staff/login'
@@ -141,6 +153,7 @@ export interface RootRouteChildren {
   ConfidentialiteRoute: typeof ConfidentialiteRoute
   ConfirmationRoute: typeof ConfirmationRoute
   ContactRoute: typeof ContactRoute
+  JeuRoute: typeof JeuRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   RecrutementRoute: typeof RecrutementRoute
   StaffLoginRoute: typeof StaffLoginRoute
@@ -161,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/mentions-legales'
       fullPath: '/mentions-legales'
       preLoaderRoute: typeof MentionsLegalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jeu': {
+      id: '/jeu'
+      path: '/jeu'
+      fullPath: '/jeu'
+      preLoaderRoute: typeof JeuRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -221,6 +241,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConfidentialiteRoute: ConfidentialiteRoute,
   ConfirmationRoute: ConfirmationRoute,
   ContactRoute: ContactRoute,
+  JeuRoute: JeuRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   RecrutementRoute: RecrutementRoute,
   StaffLoginRoute: StaffLoginRoute,

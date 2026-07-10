@@ -1,3 +1,4 @@
+import { QRCodeSVG } from 'qrcode.react';
 import {
   useState,
   useEffect,
@@ -1376,10 +1377,13 @@ function RestaurantPage() {
 // ─── Game Page ────────────────────────────────────────────────────────────────
 
 function GamePage() {
+  const [showGame, setShowGame] = useState(false);
   const [score, setScore] = useState(0);
   const [active, setActive] = useState<number | null>(null);
   const [running, setRunning] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
+  const gameUrl = 'https://crazytoasty.fr/jeu';
+  const googleReviewUrl = 'https://g.page/r/CczrmSXmCqF0EBM/review';
 
   useEffect(() => {
     if (!running) return;
@@ -1401,9 +1405,33 @@ function GamePage() {
   }, [running]);
 
   function start() { setScore(0); setTimeLeft(30); setRunning(true); }
-
   function hit(i: number) {
     if (i === active) { setScore((s) => s + 1); setActive(null); }
+  }
+
+  if (!showGame) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px', gap: '24px' }}>
+        <div style={{ textAlign: 'center' }}>
+          <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#1e293b', margin: '0 0 4px' }}>QR Code Client</h2>
+          <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>Scanne pour accéder au jeu ou laisser un avis</p>
+        </div>
+        <div style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '3px solid #f97316', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
+<QRCodeSVG value={gameUrl} size={200} level="H" includeMargin />
+        </div>
+        <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>{gameUrl}</p>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <button onClick={() => { setShowGame(true); setScore(0); setTimeLeft(30); setRunning(false); }}
+            style={{ padding: '10px 20px', background: 'linear-gradient(135deg, #f97316, #ea580c)', border: 'none', borderRadius: '10px', color: 'white', fontWeight: '700', cursor: 'pointer' }}>
+            🎮 Jouer
+          </button>
+          <a href={googleReviewUrl} target="_blank" rel="noopener noreferrer"
+            style={{ padding: '10px 20px', background: '#4285f4', border: 'none', borderRadius: '10px', color: 'white', fontWeight: '700', cursor: 'pointer', textDecoration: 'none' }}>
+            ⭐ Avis Google
+          </a>
+        </div>
+      </div>
+    );
   }
 
   return (
