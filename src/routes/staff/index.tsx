@@ -1416,10 +1416,34 @@ function GamePage() {
           <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#1e293b', margin: '0 0 4px' }}>QR Code Client</h2>
           <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>Scanne pour accéder au jeu ou laisser un avis</p>
         </div>
-        <div style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '3px solid #f97316', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
+        <div id='crazy-qr-code' style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '3px solid #f97316', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
 <QRCodeSVG value={gameUrl} size={200} level="H" includeMargin />
         </div>
         <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>{gameUrl}</p>
+        <button onClick={() => {
+          const svg = document.querySelector('#crazy-qr-code svg') as SVGElement;
+          if (!svg) return;
+          const svgData = new XMLSerializer().serializeToString(svg);
+          const canvas = document.createElement('canvas');
+          canvas.width = 512; canvas.height = 512;
+          const ctx = canvas.getContext('2d');
+          const img = new Image();
+          img.onload = () => {
+            if (ctx) {
+              ctx.fillStyle = 'white';
+              ctx.fillRect(0, 0, 512, 512);
+              ctx.drawImage(img, 0, 0, 512, 512);
+              const link = document.createElement('a');
+              link.download = 'qr-code-crazytoasty.png';
+              link.href = canvas.toDataURL('image/png');
+              link.click();
+            }
+          };
+          img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        }}
+          style={{ padding: '10px 20px', background: '#1e293b', border: 'none', borderRadius: '10px', color: 'white', fontWeight: '600', cursor: 'pointer', fontSize: '13px' }}>
+          ⬇️ Télécharger le QR code
+        </button>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
           <button onClick={() => { setShowGame(true); setScore(0); setTimeLeft(30); setRunning(false); }}
             style={{ padding: '10px 20px', background: 'linear-gradient(135deg, #f97316, #ea580c)', border: 'none', borderRadius: '10px', color: 'white', fontWeight: '700', cursor: 'pointer' }}>
