@@ -83,6 +83,8 @@ function JeuPage() {
   const handleReview = () => {
     setReviewClicked(true);
     window.open(googleReviewUrl, '_blank');
+    // Redirection automatique vers le jeu après 5 secondes
+    setTimeout(() => setStep('game'), 5000);
   };
 
   return (
