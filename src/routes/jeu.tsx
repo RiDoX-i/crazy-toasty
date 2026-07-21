@@ -200,10 +200,18 @@ function JeuPage() {
             <p style={{ color: '#fed7aa', fontSize: '16px', fontWeight: '700', margin: '0 0 20px' }}>Laisse ton avis Google pour débloquer le jeu !</p>
             <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '20px', marginBottom: '16px' }}>
               {!reviewClicked ? (
-                <button onClick={handleReview}
+                <div>
+                  <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '12px', padding: '14px', marginBottom: '16px' }}>
+                    <p style={{ color: 'white', fontSize: '14px', fontWeight: '700', margin: '0 0 6px' }}>Comment ca marche :</p>
+                    <p style={{ color: '#94a3b8', fontSize: '13px', margin: '0 0 4px' }}>1. Clique sur le bouton ci-dessous</p>
+                    <p style={{ color: '#94a3b8', fontSize: '13px', margin: '0 0 4px' }}>2. Laisse ton avis sur Google</p>
+                    <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>3. Reviens sur cette page pour jouer !</p>
+                  </div>
+                  <button onClick={handleReview}
                   style={{ width: '100%', padding: '14px', background: '#4285f4', border: 'none', borderRadius: '12px', color: 'white', fontWeight: '700', fontSize: '16px', cursor: 'pointer' }}>
                   ⭐ Laisser un avis Google
                 </button>
+                </div>
               ) : (
                 <div>
                   <div style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid #22c55e', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
