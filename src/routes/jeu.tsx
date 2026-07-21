@@ -46,6 +46,7 @@ function JeuPage() {
   const [matched, setMatched] = useState<number[]>([]);
   const [prize, setPrize] = useState<typeof PRIZES[0] | null>(null);
   const [reviewClicked, setReviewClicked] = useState(false);
+  const [reviewCountdown, setReviewCountdown] = useState(15);
   const [attempts, setAttempts] = useState(0);
   const [countdown, setCountdown] = useState(10);
 
@@ -127,7 +128,13 @@ function JeuPage() {
   const handleReview = () => {
     setReviewClicked(true);
     window.open(googleReviewUrl, '_blank');
-    setTimeout(() => setStep('game'), 30000);
+    let count = 15;
+    setReviewCountdown(count);
+    const timer = setInterval(() => {
+      count--;
+      setReviewCountdown(count);
+      if (count <= 0) { clearInterval(timer); setStep('game'); }
+    }, 1000);
   };
 
   return (
@@ -199,7 +206,11 @@ function JeuPage() {
                 </button>
               ) : (
                 <div>
-                  <p style={{ color: '#22c55e', fontWeight: '700', margin: '0 0 12px' }}>✅ Merci pour ton avis !</p>
+                  <div style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid #22c55e', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
+                    <p style={{ color: '#22c55e', fontWeight: '800', margin: '0 0 8px', fontSize: '16px' }}>Super !</p>
+                    <p style={{ color: 'white', fontSize: '14px', margin: '0 0 4px' }}> Donne tes étoiles sur Google</p>
+                    <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>puis reviens ici pour jouer !</p>
+                  </div>
                   <button onClick={() => setStep('game')}
                     style={{ width: '100%', padding: '12px', background: 'rgba(34,197,94,0.2)', border: '1px solid #22c55e', borderRadius: '12px', color: '#22c55e', fontWeight: '700', fontSize: '14px', cursor: 'pointer' }}>
                     🎮 Jouer maintenant !
@@ -261,7 +272,7 @@ function JeuPage() {
                   {new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
               </div>
-              <p style={{ color: '#94a3b8', fontSize: '12px', margin: '0 0 8px', fontStyle: 'italic' }}>📱 Montre cet écran au comptoir 🎁</p>
+              <p style={{ color: '#94a3b8', fontSize: '12px', margin: '0 0 8px', fontStyle: 'italic' }}> Montre cet écran au comptoir 🎁</p>
               <p style={{ color: '#64748b', fontSize: '12px', margin: 0 }}>Un bon a également été envoyé à {contact}</p>
             </div>
             <a href="/commander"
