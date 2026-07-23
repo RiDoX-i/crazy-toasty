@@ -107,6 +107,8 @@ function JeuPage() {
   const handleReview = async () => {
     setReviewClicked(true);
     window.open(googleReviewUrl, '_blank');
+    // Rediriger vers le menu après 2 secondes
+    setTimeout(() => { window.location.href = '/commander'; }, 2000);
     // Sauvegarder et envoyer email maintenant
     if (prize) {
       await supabase.from('game_wins').insert({ prize: prize.label, contact: contact.trim().toLowerCase() });
