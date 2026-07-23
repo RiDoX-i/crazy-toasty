@@ -38,7 +38,7 @@ function generateCards() {
 }
 
 function JeuPage() {
-  const [step, setStep] = useState<'contact' | 'checking' | 'already' | 'review' | 'game' | 'win' | 'prize'>('contact');
+  const [step, setStep] = useState<'contact' | 'checking' | 'already' | 'game' | 'win'>('contact');
   const [contact, setContact] = useState('');
   const [contactError, setContactError] = useState('');
   const [cards, setCards] = useState<string[]>([]);
@@ -48,7 +48,6 @@ function JeuPage() {
   const [reviewClicked, setReviewClicked] = useState(false);
   const [reviewCountdown, setReviewCountdown] = useState(15);
   const [attempts, setAttempts] = useState(0);
-  const [countdown, setCountdown] = useState(10);
 
   useEffect(() => {
     if (step === 'game') {
@@ -59,18 +58,7 @@ function JeuPage() {
     }
   }, [step]);
 
-  // Redirection auto après prize
-  useEffect(() => {
-    if (step === 'prize') {
-      const timer = setInterval(() => {
-        setCountdown(c => {
-          if (c <= 1) { clearInterval(timer); window.location.href = '/commander'; return 0; }
-          return c - 1;
-        });
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [step]);
+
 
   const handleCheckContact = async () => {
     const cleaned = contact.trim().toLowerCase();
@@ -82,7 +70,7 @@ function JeuPage() {
     if (data) {
       setStep('already');
     } else {
-      setStep('review');
+      setStep('game');
     }
   };
 
@@ -98,16 +86,7 @@ function JeuPage() {
         const winPrize = PRIZES[Math.floor(Math.random() * PRIZES.length)];
         setPrize(winPrize);
         setTimeout(async () => {
-          await supabase.from('game_wins').insert({ prize: winPrize.label, contact: contact.trim().toLowerCase() });
-          // Envoyer email de récompense
-          await supabase.functions.invoke('send-game-reward', {
-            body: {
-              email: contact.trim().toLowerCase(),
-              prize: winPrize.label,
-              emoji: winPrize.emoji,
-              date: new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
-            }
-          });
+          setPrize(winPrize);
           setStep('win');
         }, 800);
       } else {
@@ -125,9 +104,23 @@ function JeuPage() {
     }
   };
 
-  const handleReview = () => {
+  const handleReview = async () => {
     setReviewClicked(true);
     window.open(googleReviewUrl, '_blank');
+    // Sauvegarder et envoyer email maintenant
+    if (prize) {
+      await supabase.from('game_wins').insert({ prize: prize.label, contact: contact.trim().toLowerCase() });
+      await fetch('https://sejtefqrjzouatztwwue.supabase.co/functions/v1/send-game-reward', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_Kkgztfk46FJK5DZA3siCuQ_In93SfJ6' },
+        body: JSON.stringify({
+          email: contact.trim().toLowerCase(),
+          prize: prize.label,
+          emoji: prize.emoji,
+          date: new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+        })
+      });
+    }
     let count = 15;
     setReviewCountdown(count);
     const timer = setInterval(() => {
@@ -257,40 +250,21 @@ function JeuPage() {
         {step === 'win' && prize && (
           <div>
             <div style={{ fontSize: '72px', marginBottom: '12px' }}>{prize.emoji}</div>
-            <h2 style={{ fontSize: '26px', fontWeight: '900', color: '#22c55e', margin: '0 0 4px' }}>🎉 Tu as gagné !</h2>
-            <p style={{ color: 'white', fontSize: '20px', fontWeight: '700', margin: '0 0 24px' }}>{prize.label}</p>
-            <button onClick={() => { setCountdown(10); setStep('prize'); }}
-              style={{ width: '100%', padding: '14px', background: 'linear-gradient(135deg, #f97316, #ea580c)', border: 'none', borderRadius: '12px', color: 'white', fontWeight: '700', fontSize: '16px', cursor: 'pointer' }}>
-              🎁 Voir mon bon de récompense
-            </button>
-          </div>
-        )}
-
-        {/* BON DE RÉCOMPENSE */}
-        {step === 'prize' && prize && (
-          <div>
-            <div style={{ background: 'white', borderRadius: '20px', padding: '32px', textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
-              <p style={{ color: '#f97316', fontSize: '11px', fontWeight: '700', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '2px' }}>Crazy Toasty</p>
-              <p style={{ color: '#64748b', fontSize: '12px', margin: '0 0 16px' }}>Bon de récompense</p>
-              <div style={{ fontSize: '72px', marginBottom: '12px' }}>{prize.emoji}</div>
-              <h2 style={{ fontSize: '24px', fontWeight: '900', color: '#1e293b', margin: '0 0 16px' }}>{prize.label}</h2>
-              <div style={{ border: '2px dashed #e2e8f0', borderRadius: '10px', padding: '12px', marginBottom: '12px' }}>
-                <p style={{ color: '#64748b', fontSize: '12px', margin: '0 0 4px' }}>Valable aujourd'hui uniquement</p>
-                <p style={{ color: '#1e293b', fontWeight: '700', fontSize: '14px', margin: 0 }}>
-                  {new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                </p>
-              </div>
-              <p style={{ color: '#94a3b8', fontSize: '12px', margin: '0 0 8px', fontStyle: 'italic' }}> Montre cet écran au comptoir 🎁</p>
-              <p style={{ color: '#64748b', fontSize: '12px', margin: 0 }}>Un bon a également été envoyé à {contact}</p>
+            <h2 style={{ fontSize: '26px', fontWeight: '900', color: '#22c55e', margin: '0 0 8px' }}>Felicitations !</h2>
+            <p style={{ color: 'white', fontSize: '18px', fontWeight: '700', margin: '0 0 20px' }}>Tu gagnes : {prize.label}</p>
+            <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '20px' }}>
+              <p style={{ color: '#fed7aa', fontSize: '14px', margin: '0 0 16px' }}>Clique ci-dessous pour recevoir ton bon de recompense par email !</p>
+              {!reviewClicked ? (
+                <button onClick={handleReview}
+                  style={{ width: '100%', padding: '14px', background: '#4285f4', border: 'none', borderRadius: '12px', color: 'white', fontWeight: '700', fontSize: '16px', cursor: 'pointer' }}>
+                  Laisser un avis Google et recevoir mon bon
+                </button>
+              ) : (
+                <p style={{ color: '#22c55e', fontWeight: '700', fontSize: '15px', margin: 0 }}>Ton bon a ete envoye a {contact} !</p>
+              )}
             </div>
-            <a href="/commander"
-              style={{ display: 'block', marginTop: '16px', padding: '14px', background: 'linear-gradient(135deg, #f97316, #ea580c)', borderRadius: '12px', color: 'white', fontWeight: '700', fontSize: '16px', textDecoration: 'none' }}>
-              🥪 Commander maintenant ({countdown}s)
-            </a>
-            <p style={{ color: '#475569', fontSize: '11px', marginTop: '12px' }}>© 2026 Crazy Toasty</p>
           </div>
         )}
-
       </div>
     </div>
   );
